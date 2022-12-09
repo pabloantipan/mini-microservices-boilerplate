@@ -22,7 +22,7 @@ app.get('/posts', (req, res) => {
   res.send(POSTS);
 });
 
-app.post('/post', (req, res) => {
+app.post('/posts', (req, res) => {
   // { title: string }
   const id = randomBytes(4).toString('hex');
   const { title } = req.body;
