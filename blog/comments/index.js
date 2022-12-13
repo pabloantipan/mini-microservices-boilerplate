@@ -1,10 +1,13 @@
 const express = require("express");
 const bodyParser = require('body-parser');
 const { randomBytes } = require('crypto');
+const cors = require('cors');
+const axios = require('axios');
 
 const app = express();
 const APP_PORT = 4001;
 app.use(bodyParser.json());
+app.use(cors());
 
 const COMMENTS_BY_POST_ID = {};
 
@@ -34,10 +37,25 @@ app.post('/posts/:id/comments', (req, res) => {
 
   COMMENTS_BY_POST_ID[req.params.id] = comments;
 
+  axios.post('http://localhost:4005/events', {
+    type: 'CommentCreated',
+    data: {
+      id: commentId,
+      content,
+      postId: req.params.id,
+    },
+  });
+
   res.status(201).send(comments);
+});
+
+app.post('/events', (req, res) => {
+  console.log('Event received by post service', req.body.type);
+  res.send({});
 });
 
 
 app.listen(APP_PORT, () => {
   console.log(`comments service listening on port ${APP_PORT}`);
 });
+
